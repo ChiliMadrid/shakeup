@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShakeUp Mini | Interactive UI Flow</title>
+  <link rel="stylesheet" href="shakeup-mini.css" />
+</head>
+<body>
+  <header class="header">
+    <nav class="nav" aria-label="Primary navigation">
+      <a class="brand" href="shakeup-mini.html">Shake<span>Up</span> Mini</a>
+      <div class="nav-links">
+        <a href="overview.html">Overview</a>
+        <a class="active" href="ui-flow.html">UI Flow</a>
+        <a href="specs.html">Specs</a>
+        <a href="operators.html">Operators</a>
+      </div>
+      <a class="button" href="operators.html">Partner models</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="light">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Interactive kiosk example.</h2>
+          <p>Click through the member order path: start, goal, flavor, add-ons, payment, making, and pickup. The prototype now shows animated progress, generated flavor images, and live pricing feedback.</p>
+        </div>
+        <div class="kiosk-demo">
+          <div class="kiosk-shell">
+            <div class="kiosk-screen" id="kioskScreen"></div>
+          </div>
+          <div class="demo-side">
+            <article class="demo-side-card demo-status" id="demoStatus">
+              <h3>Member flow</h3>
+              <p>Start an order to see how the kiosk keeps decisions simple while still feeling premium.</p>
+              <div class="status-metrics">
+                <span><strong>1</strong> decision</span>
+                <span><strong>KRW 4,500</strong> total</span>
+                <span><strong>15s</strong> prep</span>
+              </div>
+            </article>
+            <div class="flavor-showcase" aria-label="Generated flavor images">
+              <h3>Generated flavor set</h3>
+              <div>
+                <img src="attachments/flavors/chocolate-protein.png" alt="Chocolate Protein flavor" />
+                <img src="attachments/flavors/matcha-latte.png" alt="Matcha Latte flavor" />
+                <img src="attachments/flavors/grain-protein.png" alt="Grain Protein flavor" />
+                <img src="attachments/flavors/strawberry-yogurt.png" alt="Strawberry Yogurt flavor" />
+                <img src="attachments/flavors/blue-raspberry-preworkout.png" alt="Blue Raspberry Pre-Workout flavor" />
+                <img src="attachments/flavors/watermelon-preworkout.png" alt="Watermelon Pre-Workout flavor" />
+                <img src="attachments/flavors/orange-mango-passionfruit-preworkout.png" alt="Orange Mango Passionfruit Pre-Workout flavor" />
+                <img src="attachments/flavors/grape-preworkout.png" alt="Grape Pre-Workout flavor" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="light">
+      <div class="wrap">
+        <div class="ease-grid">
+          <article class="ease-card"><h3>No menu hunting. No staff wait.</h3><p>The flow is intentionally linear so members can complete an order without comparing every product detail.</p><div class="ease-metrics"><div class="ease-metric"><strong>7</strong><span>screens</span></div><div class="ease-metric"><strong>1</strong><span>main action</span></div><div class="ease-metric"><strong>15s</strong><span>countdown</span></div></div></article>
+          <article class="ease-card dark"><h3>Designed for repeat use.</h3><p>Once a member learns the path, the second order becomes muscle memory.</p><div class="ease-metrics"><div class="ease-metric"><strong>Tap</strong><span>targets</span></div><div class="ease-metric"><strong>Pay</strong><span>wallets</span></div><div class="ease-metric"><strong>Go</strong><span>pickup</span></div></div></article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const screen = document.querySelector("#kioskScreen");
+    const status = document.querySelector("#demoStatus");
+    const steps = ["start", "goal", "flavor", "addons", "payment", "making", "pickup"];
+    const stepLabels = {
+      start: "Start",
+      goal: "Goal",
+      flavor: "Flavor",
+      addons: "Add",
+      payment: "Pay",
+      making: "Mix",
+      pickup: "Done"
+    };
+    const goalData = [
+      ["Lean Cut", "High protein, light finish"],
+      ["Muscle Gain", "More body, richer blend"],
+      ["Recovery", "Balanced post-session fuel"],
+      ["Energy Boost", "Pre-workout lift"]
+    ];
+    const shakeFlavors = [
+      { name: "Chocolate Protein", key: "chocolate-protein", meta: "Classic protein", img: "attachments/flavors/chocolate-protein.png" },
+      { name: "Matcha Latte", key: "matcha-latte", meta: "Smooth latte recovery", img: "attachments/flavors/matcha-latte.png" },
+      { name: "Grain Protein", key: "grain-protein", meta: "Nutty recovery", img: "attachments/flavors/grain-protein.png" },
+      { name: "Strawberry Yogurt", key: "strawberry-yogurt", meta: "Bright and light", img: "attachments/flavors/strawberry-yogurt.png" }
+    ];
+    const preworkoutFlavors = [
+      { name: "Blue Raspberry Pre-Workout", key: "blue-raspberry-preworkout", meta: "Bright berry energy", img: "attachments/flavors/blue-raspberry-preworkout.png" },
+      { name: "Watermelon Pre-Workout", key: "watermelon-preworkout", meta: "Fresh pre-lift flavor", img: "attachments/flavors/watermelon-preworkout.png" },
+      { name: "Orange Mango Passionfruit", key: "orange-mango-passionfruit-preworkout", meta: "Tropical citrus lift", img: "attachments/flavors/orange-mango-passionfruit-preworkout.png" },
+      { name: "Grape Pre-Workout", key: "grape-preworkout", meta: "Cold grape energy", img: "attachments/flavors/grape-preworkout.png" }
+    ];
+    const addOnData = [
+      { name: "Creatine", price: 500, meta: "Strength support" },
+      { name: "Extra Protein", price: 700, meta: "Higher protein serving" },
+      { name: "EAAs", price: 500, meta: "Amino support" }
+    ];
+    const basePrice = 4500;
+    const state = { step: "start", goal: "Recovery", flavor: "Chocolate Protein", payment: "Card", seconds: 15, addOns: [] };
+    let timer = null;
+
+    function button(label, action, extra = "") {
+      return `<button class="demo-button ${extra}" data-action="${action}">${label}</button>`;
+    }
+
+    function progress() {
+      const index = steps.indexOf(state.step);
+      return `<div class="demo-progress">${steps.map((step, i) => `<span class="${i <= index ? "active" : ""}">${stepLabels[step]}</span>`).join("")}</div>`;
+    }
+
+    function activeFlavors() {
+      return state.goal === "Energy Boost" ? preworkoutFlavors : shakeFlavors;
+    }
+
+    function selectedFlavor() {
+      return [...shakeFlavors, ...preworkoutFlavors].find((flavor) => flavor.name === state.flavor) || shakeFlavors[0];
+    }
+
+    function totalPrice() {
+      return basePrice + state.addOns.reduce((sum, addOn) => {
+        const item = addOnData.find((option) => option.name === addOn);
+        return sum + (item ? item.price : 0);
+      }, 0);
+    }
+
+    function money(amount) {
+      return `KRW ${amount.toLocaleString("en-US")}`;
+    }
+
+    function optionButton(name, meta, attr, active) {
+      return `<button class="demo-option ${active ? "active" : ""}" ${attr}="${name}"><span>${name}</span><small>${meta}</small></button>`;
+    }
+
+    function drinkPreview(label = state.flavor) {
+      const flavor = selectedFlavor();
+      const chips = state.goal === "Energy Boost" ? ["Caffeine", "Cold", "Pre-workout"] : ["Protein", "Cold", "Water"];
+      return `<div class="drink-stage"><div class="drink-preview photo-preview"><img src="${flavor.img}" alt="${flavor.name} drink image" /><span>${label}</span></div><div class="ingredient-chips">${chips.map((chip) => `<span>${chip}</span>`).join("")}</div></div>`;
+    }
+
+    function addOnButton(addOn) {
+      const active = state.addOns.includes(addOn.name);
+      return `<button class="demo-option addon-option ${active ? "active" : ""}" data-addon="${addOn.name}"><span>${addOn.name}</span><small>+${money(addOn.price)} - ${addOn.meta}</small></button>`;
+    }
+
+    function updateStatus() {
+      const copy = {
+        start: ["Member flow", "A bold start screen invites the first tap without asking for details too early."],
+        goal: ["Goal-first ordering", "Members choose the outcome first, so the kiosk can recommend a simple drink path."],
+        flavor: ["Flavor confidence", `${state.goal} is selected. The drink preview and add-on chips make the choice feel tangible.`],
+        addons: ["Optional add-ons", `${state.addOns.length || "No"} add-ons selected. The total updates before payment so the member stays in control.`],
+        payment: ["Fast checkout", `${state.flavor} is ready for ${state.payment}. The total stays visible before payment.`],
+        making: ["Live prep feedback", "The countdown and animated fill state reassure the member that the drink is being made."],
+        pickup: ["Clear handoff", "The final screen confirms pickup and makes the next order easy for repeat use."]
+      }[state.step];
+      status.innerHTML = `<h3>${copy[0]}</h3><p>${copy[1]}</p><div class="status-metrics"><span><strong>${stepLabels[state.step]}</strong> screen</span><span><strong>${state.goal}</strong> goal</span><span><strong>${money(totalPrice())}</strong> total</span></div>`;
+    }
+
+    function render() {
+      screen.classList.remove("screen-pop");
+      void screen.offsetWidth;
+      screen.classList.add("screen-pop");
+      if (state.step === "start") {
+        screen.innerHTML = `${progress()}<div class="start-stack"><div class="screen-title hero-screen"><h2>Shake<span class="accent">Up</span></h2><p>Performance and profits, no purchase needed.</p></div><button class="tap-target" data-action="goal" aria-label="Start order"><span></span><strong>Touch to start</strong></button></div>${button("Start order", "goal")}`;
+      }
+      if (state.step === "goal") {
+        screen.innerHTML = `${progress()}<div class="screen-title"><h2>Choose your goal</h2><p>What fits today's workout?</p></div><div class="demo-grid">${goalData.map(([g, meta]) => optionButton(g, meta, "data-goal", state.goal === g)).join("")}</div><div class="demo-actions">${button("Next", "flavor")}${button("Back", "start", "ghost")}</div>`;
+      }
+      if (state.step === "flavor") {
+        const flavors = activeFlavors();
+        if (!flavors.some((flavor) => flavor.name === state.flavor)) state.flavor = flavors[0].name;
+        screen.innerHTML = `${progress()}<div class="screen-title"><h2>Select flavor</h2><p>${state.goal === "Energy Boost" ? "Pre-workout flavors" : `${state.goal} recommendation`}</p></div>${drinkPreview()}<div class="demo-grid compact flavor-grid-demo">${flavors.map((flavor) => `<button class="demo-option flavor-option ${state.flavor === flavor.name ? "active" : ""}" data-flavor="${flavor.name}"><img src="${flavor.img}" alt="${flavor.name} thumbnail" /><span>${flavor.name}</span><small>${flavor.meta}</small></button>`).join("")}</div><div class="demo-actions">${button("Next", "addons")}${button("Back", "goal", "ghost")}</div>`;
+      }
+      if (state.step === "addons") {
+        screen.innerHTML = `${progress()}<div class="screen-title"><h2>Add-ons</h2><p>Customize ${state.flavor}</p></div>${drinkPreview()}<div class="demo-grid compact">${addOnData.map(addOnButton).join("")}</div><div class="payment-total mini-total"><span>Total</span><strong>${money(totalPrice())}</strong></div><div class="demo-actions">${button("Next", "payment")}${button("Skip", "payment", "ghost")}${button("Back", "flavor", "ghost")}</div>`;
+      }
+      if (state.step === "payment") {
+        const addOnLine = state.addOns.length ? ` + ${state.addOns.join(", ")}` : "";
+        screen.innerHTML = `${progress()}<div class="screen-title"><h2>Payment</h2><p>${state.flavor}${addOnLine}</p></div><div class="payment-total"><span>Total</span><strong>${money(totalPrice())}</strong></div><div class="demo-payments">${["Card","Samsung Pay","Naver Pay","Kakao Pay"].map(p => `<button class="demo-payment ${state.payment === p ? "active" : ""}" data-payment="${p}"><span>${p}</span><small>${p === "Card" ? "Tap or insert" : "Wallet ready"}</small></button>`).join("")}</div><div class="demo-actions">${button("Pay", "making")}${button("Back", "addons", "ghost")}</div>`;
+      }
+      if (state.step === "making") {
+        const pct = Math.max(8, (state.seconds / 15) * 100);
+        screen.innerHTML = `${progress()}<div class="screen-title"><h2>Making your shake</h2><p>${state.flavor}</p></div><div class="mixing-bay"><div class="fill-line" style="height:${100 - pct}%"></div><div class="mix-bubbles"><span></span><span></span><span></span></div></div><div class="count-ring" style="--progress:${pct}%">${state.seconds}<small>sec</small></div><div class="demo-actions">${button("Finish now", "pickup")}</div>`;
+      }
+      if (state.step === "pickup") {
+        screen.innerHTML = `${progress()}<div class="screen-title"><h2>Enjoy your shake</h2><p>Pick up from the front bay.</p></div>${drinkPreview("Ready")}<div class="pickup-code"><span>Order</span><strong>A12</strong></div>${button("New order", "start")}`;
+      }
+      updateStatus();
+    }
+
+    screen.addEventListener("click", (event) => {
+      const target = event.target.closest("button");
+      if (!target) return;
+      if (target.dataset.goal) {
+        state.goal = target.dataset.goal;
+        const flavors = activeFlavors();
+        state.flavor = flavors[0].name;
+        state.addOns = [];
+      }
+      if (target.dataset.flavor) state.flavor = target.dataset.flavor;
+      if (target.dataset.addon) {
+        if (state.addOns.includes(target.dataset.addon)) {
+          state.addOns = state.addOns.filter((name) => name !== target.dataset.addon);
+        } else {
+          state.addOns = [...state.addOns, target.dataset.addon];
+        }
+      }
+      if (target.dataset.payment) state.payment = target.dataset.payment;
+      if (target.dataset.action) {
+        state.step = target.dataset.action;
+        if (state.step === "making") {
+          state.seconds = 15;
+          if (timer) clearInterval(timer);
+          timer = setInterval(() => {
+            if (state.step !== "making") return clearInterval(timer);
+            state.seconds -= 1;
+            if (state.seconds <= 0) {
+              state.step = "pickup";
+              clearInterval(timer);
+            }
+            render();
+          }, 700);
+        }
+      }
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
