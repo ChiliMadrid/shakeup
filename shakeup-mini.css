@@ -547,7 +547,7 @@ section {
 
 .kiosk-demo {
   display: grid;
-  grid-template-columns: minmax(260px, 360px) minmax(0, 1fr);
+  grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
   gap: 26px;
   align-items: center;
 }
@@ -776,14 +776,21 @@ section {
 .demo-payment span {
   display: block;
   margin-bottom: 6px;
+  min-width: 0;
+  line-height: 1.08;
+  overflow-wrap: anywhere;
+  word-break: normal;
 }
 
 .demo-option small,
 .demo-payment small {
   display: block;
+  min-width: 0;
   color: rgba(247, 248, 241, 0.62);
   font-size: 0.68rem;
   font-weight: 750;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
 }
 
 .flavor-grid-demo {
@@ -791,16 +798,17 @@ section {
 }
 
 .flavor-option {
-  min-height: 124px;
+  min-height: 86px;
   display: grid;
-  grid-template-columns: 54px minmax(0, 1fr);
+  grid-template-columns: 56px minmax(0, 1fr);
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  min-width: 0;
 }
 
 .flavor-option img {
-  width: 54px;
-  height: 70px;
+  width: 56px;
+  height: 56px;
   object-fit: cover;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.14);
@@ -809,6 +817,15 @@ section {
 .flavor-option span,
 .flavor-option small {
   grid-column: 2;
+}
+
+.flavor-option span {
+  font-size: clamp(0.68rem, 1.2vw, 0.82rem);
+  letter-spacing: 0;
+}
+
+.flavor-option small {
+  font-size: 0.62rem;
 }
 
 .addon-option {
@@ -929,6 +946,8 @@ section {
   color: #fff;
   font-size: 0.62rem;
   line-height: 1.1;
+  white-space: normal;
+  overflow-wrap: anywhere;
   backdrop-filter: blur(8px);
 }
 
@@ -1780,6 +1799,7 @@ footer {
 
   .flavor-option {
     min-height: 96px;
+    grid-template-columns: 54px minmax(0, 1fr);
   }
 
   .flavor-showcase > div {

@@ -95,10 +95,10 @@
       { name: "Strawberry Yogurt", key: "strawberry-yogurt", meta: "Bright and light", img: "attachments/flavors/strawberry-yogurt.png" }
     ];
     const preworkoutFlavors = [
-      { name: "Blue Raspberry Pre-Workout", key: "blue-raspberry-preworkout", meta: "Bright berry energy", img: "attachments/flavors/blue-raspberry-preworkout.png" },
-      { name: "Watermelon Pre-Workout", key: "watermelon-preworkout", meta: "Fresh pre-lift flavor", img: "attachments/flavors/watermelon-preworkout.png" },
-      { name: "Orange Mango Passionfruit", key: "orange-mango-passionfruit-preworkout", meta: "Tropical citrus lift", img: "attachments/flavors/orange-mango-passionfruit-preworkout.png" },
-      { name: "Grape Pre-Workout", key: "grape-preworkout", meta: "Cold grape energy", img: "attachments/flavors/grape-preworkout.png" }
+      { name: "Blue Raspberry Pre-Workout", label: "Blue Rasp.", key: "blue-raspberry-preworkout", meta: "Bright berry energy", img: "attachments/flavors/blue-raspberry-preworkout.png" },
+      { name: "Watermelon Pre-Workout", label: "Melon", key: "watermelon-preworkout", meta: "Fresh pre-lift flavor", img: "attachments/flavors/watermelon-preworkout.png" },
+      { name: "Orange Mango Passionfruit", label: "Orange Mango", key: "orange-mango-passionfruit-preworkout", meta: "Tropical citrus lift", img: "attachments/flavors/orange-mango-passionfruit-preworkout.png" },
+      { name: "Grape Pre-Workout", label: "Grape", key: "grape-preworkout", meta: "Cold grape energy", img: "attachments/flavors/grape-preworkout.png" }
     ];
     const addOnData = [
       { name: "Creatine", price: 500, meta: "Strength support" },
@@ -178,7 +178,7 @@
       if (state.step === "flavor") {
         const flavors = activeFlavors();
         if (!flavors.some((flavor) => flavor.name === state.flavor)) state.flavor = flavors[0].name;
-        screen.innerHTML = `${progress()}<div class="screen-title"><h2>Select flavor</h2><p>${state.goal === "Energy Boost" ? "Pre-workout flavors" : `${state.goal} recommendation`}</p></div>${drinkPreview()}<div class="demo-grid compact flavor-grid-demo">${flavors.map((flavor) => `<button class="demo-option flavor-option ${state.flavor === flavor.name ? "active" : ""}" data-flavor="${flavor.name}"><img src="${flavor.img}" alt="${flavor.name} thumbnail" /><span>${flavor.name}</span><small>${flavor.meta}</small></button>`).join("")}</div><div class="demo-actions">${button("Next", "addons")}${button("Back", "goal", "ghost")}</div>`;
+        screen.innerHTML = `${progress()}<div class="screen-title"><h2>Select flavor</h2><p>${state.goal === "Energy Boost" ? "Pre-workout flavors" : `${state.goal} recommendation`}</p></div>${drinkPreview()}<div class="demo-grid compact flavor-grid-demo">${flavors.map((flavor) => `<button class="demo-option flavor-option ${state.flavor === flavor.name ? "active" : ""}" data-flavor="${flavor.name}"><img src="${flavor.img}" alt="${flavor.name} thumbnail" /><span>${flavor.label || flavor.name}</span><small>${flavor.meta}</small></button>`).join("")}</div><div class="demo-actions">${button("Next", "addons")}${button("Back", "goal", "ghost")}</div>`;
       }
       if (state.step === "addons") {
         screen.innerHTML = `${progress()}<div class="screen-title"><h2>Add-ons</h2><p>Customize ${state.flavor}</p></div>${drinkPreview()}<div class="demo-grid compact">${addOnData.map(addOnButton).join("")}</div><div class="payment-total mini-total"><span>Total</span><strong>${money(totalPrice())}</strong></div><div class="demo-actions">${button("Next", "payment")}${button("Skip", "payment", "ghost")}${button("Back", "flavor", "ghost")}</div>`;
